@@ -1,6 +1,6 @@
 import UnionBankScraper from './unionbank';
 import {
-  maybeTestCompanyAPI, extendAsyncTimeout, getTestsConfig, exportTransactions,
+  maybeTestCompanyAPI, extendAsyncTimeout, getTestsConfig, exportTransactions
 } from '../../tests/tests-utils';
 import { SCRAPERS } from '../definitions';
 import { LOGIN_RESULT } from '../constants';
@@ -10,10 +10,13 @@ const testsConfig = getTestsConfig();
 
 describe('Union bank scraper', () => {
   beforeAll(() => {
+    scraper.getLoginOptions(testsConfig.credentials.union);
+
     extendAsyncTimeout(); // The default timeout is 5 seconds per async test, this function extends the timeout value
   });
 
   test('should expose login fields in scrapers constant', () => {
+    //(SCRAPERS.union).getLoginOptions();
     expect(SCRAPERS.union).toBeDefined();
     expect(SCRAPERS.union.loginFields).toContain('username');
     expect(SCRAPERS.union.loginFields).toContain('password');
@@ -44,6 +47,7 @@ describe('Union bank scraper', () => {
     };
 
     const scraper = new UnionBankScraper(options);
+    // scraper.getLoginOptions(testsConfig.credentials.union);
     const result = await scraper.scrape(testsConfig.credentials.union);
     expect(result).toBeDefined();
     const error = `${result.errorType || ''} ${result.errorMessage || ''}`.trim();

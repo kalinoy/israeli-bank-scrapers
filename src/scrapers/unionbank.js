@@ -28,14 +28,15 @@ function getPossibleLoginResults() {
   return urls;
 }
 
-function goToLoginPage(credentials) {
-
+async function goToLoginPage(page) {
+  await clickButton(page, '#enterAccount');
 }
 
-function createLoginFields(credentials) {
+async function createLoginFields(page, credentials) {
+  await goToLoginPage(page);
   return [
-    { selector: '#wtr_uid', value: credentials.username },
-    { selector: '#wtr_password', value: credentials.password },
+    { selector: '#uid', value: credentials.username },
+    { selector: '#password', value: credentials.password },
   ];
 }
 
@@ -230,10 +231,12 @@ async function fetchTransactions(page, startDate) {
 }
 
 async function waitForPostLogin(page) {
+  // TODO click on the page
   // TODO check for condition to provide new password
   return Promise.race([
+    // TODO check the element when connected
     waitUntilElementFound(page, 'div.leumi-container', true),
-    waitUntilElementFound(page, '#loginErrMsg', true),
+    waitUntilElementFound(page, '#restore', true),
   ]);
 }
 
@@ -241,7 +244,7 @@ class UnionBankScraper extends BaseScraperWithBrowser {
   getLoginOptions(credentials) {
     return {
       loginUrl: `${BASE_URL}`,
-      fields: createLoginFields(credentials),
+      fields: async () => createLoginFields(this.page, credentials),
       submitButtonSelector: '#enter',
       postAction: async () => waitForPostLogin(this.page),
       possibleResults: getPossibleLoginResults(),
